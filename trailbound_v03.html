@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#b58c71" />
+<title>TRAILBOUND — The Open Atlas (v0.3)</title>
+<style>
+:root{color-scheme:dark;--cream:#f7eada;--muted:#e9cfb5;--char:#29332f;--panel:#252f2cce;--line:#ffefd74a;--gold:#f0c58c}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#b48c71;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--cream);touch-action:none;-webkit-user-select:none;user-select:none}canvas{display:block}button{font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #ffe0ad;outline-offset:3px}
+#game{position:fixed;inset:0;width:100%;height:100%;z-index:0}#tone{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 165px #35241933;background:linear-gradient(180deg,#3a382221,transparent 22%,transparent 75%,#2f2a2229)}#ui{position:fixed;inset:0;pointer-events:none}#mast{position:absolute;top:max(17px,env(safe-area-inset-top));left:20px;right:20px;display:flex;justify-content:space-between;align-items:flex-start;text-shadow:0 2px 9px #291b1690}.brand{font-size:16px;letter-spacing:.2em;font-weight:900}.version{font-size:9px;letter-spacing:.2em;margin-top:5px;opacity:.86}.sceneInfo{text-align:right;font-size:11px;line-height:1.85;letter-spacing:.12em;font-weight:700}.sceneInfo span{font-weight:400;opacity:.85}
+#journal{position:absolute;left:20px;top:89px;max-width:290px;padding:15px 17px;border-radius:15px;border:1px solid #ffffff29;background:var(--panel);backdrop-filter:blur(10px);box-shadow:0 8px 20px #29211925;transition:opacity .3s}.eyebrow{font-size:9px;letter-spacing:.2em;color:var(--gold);font-weight:700}#journal h2{font:normal 22px/1.18 Georgia,"Times New Roman",serif;margin:8px 0 7px}#journal p{font-size:12px;line-height:1.55;color:#f0e4d3;margin:0}#journal .journalFoot{margin-top:12px;font-size:10px;color:#eacdae;display:flex;gap:7px;align-items:center}.dot{width:6px;height:6px;border-radius:50%;background:#efbc76;display:inline-block}
+#actions{position:absolute;right:19px;top:92px;display:flex;gap:7px;pointer-events:auto}#actions button{background:#29342ac0;border:1px solid #f9e2c25c;padding:10px 11px;border-radius:11px;color:#fff1df;font-size:10px;font-weight:750;letter-spacing:.07em;backdrop-filter:blur(8px)}#actions button:active{background:#dbb58780}#notice{position:absolute;top:37%;left:50%;transform:translate(-50%,-50%);width:min(85vw,480px);font:normal clamp(18px,4vw,27px)/1.25 Georgia,serif;text-align:center;text-shadow:0 3px 16px #2f251fc2;opacity:0;transition:opacity .3s}#notice.on{opacity:1}
+#telemetry{position:absolute;bottom:max(23px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;text-align:center;gap:21px;text-shadow:0 2px 12px #271b16bd}#telemetry .num{font-size:26px;font-weight:350;line-height:1.05;font-variant-numeric:tabular-nums}#telemetry .label{font-size:9px;letter-spacing:.16em;margin-top:5px;color:#f7e5d1}#telemetry .divider{height:28px;border-left:1px solid #ffefcf72;margin-bottom:4px}#tractionMeter{width:60px;height:4px;background:#ffffff6a;border-radius:9px;margin:7px auto 0;overflow:hidden}#tractionFill{width:100%;height:100%;background:#f7dfb0;transition:width .1s,background .2s}#mini{position:absolute;right:18px;bottom:30px;width:144px;height:144px;border-radius:50%;border:1px solid #fff3d99c;background:#66584296;box-shadow:0 4px 16px #281c1a6a;overflow:hidden}#map{width:100%;height:100%}
+#touch{position:absolute;bottom:max(15px,env(safe-area-inset-bottom));left:0;right:0;padding:0 14px;display:none;justify-content:space-between;align-items:flex-end;pointer-events:none}#turnControls,#driveControls{display:flex;gap:9px;align-items:flex-end;pointer-events:auto}.pad{border:1px solid #f5e6d178;background:#273029ab;backdrop-filter:blur(9px);color:#fbedda;border-radius:17px;height:68px;min-width:63px;padding:9px;font-size:23px;touch-action:none;outline-offset:0}.pad:active,.pad.down{background:#f1c78bb0;color:#342b25;border-color:#fff0cf}.pad small{display:block;font-size:8px;letter-spacing:.11em;margin-top:2px;font-weight:750}.pad.drive{min-width:70px}.pad.brake{min-width:68px}
+#mobileGear{position:absolute;bottom:max(90px,calc(env(safe-area-inset-bottom) + 83px));right:15px;display:none;pointer-events:auto}.chip{padding:11px 14px;background:#28312bc9;border:1px solid #ffebc475;color:var(--cream);border-radius:10px;font-size:11px;letter-spacing:.12em;font-weight:800}#stall{position:absolute;left:50%;bottom:132px;transform:translateX(-50%);width:min(90vw,350px);display:none;text-align:center;pointer-events:auto;background:#352d24e8;border:1px solid #f0bd8b85;border-radius:16px;padding:16px;box-shadow:0 12px 50px #100e0b70}#stall h3{font:normal 23px Georgia,serif;margin:0 0 7px}#stall p{font-size:12px;line-height:1.5;margin:0 0 13px;color:#f2e2c9}#stall button{border:0;border-radius:20px;background:#f1d2a9;padding:11px 19px;color:#2d281f;font-weight:800;font-size:12px;margin:0 4px}
+#intro{position:fixed;inset:0;z-index:9;background:linear-gradient(155deg,#6a58479c,#252d2abd);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px}#intro .inner{width:min(480px,100%);text-align:center}#intro .sup{font-size:10px;letter-spacing:.27em;color:#f0c590;font-weight:800}#intro h1{font:normal clamp(57px,12vw,89px)/1 Georgia,serif;letter-spacing:-.045em;margin:13px 0 2px}#intro em{font:italic 22px Georgia,serif;color:#f5d7b3}#intro p{font-size:14px;line-height:1.72;color:#f7e8d6;max-width:385px;margin:22px auto}#begin{border:0;border-radius:50px;background:#f0d4ab;color:#36302a;padding:15px 34px;font-weight:850;letter-spacing:.12em;font-size:13px;box-shadow:0 4px 21px #221b1545}#intro .how{font-size:10px;line-height:1.8;opacity:.88;margin-top:22px}#loading{font-size:11px;color:#f1d4ad;letter-spacing:.1em;margin-top:13px}#bootError{color:#fff0d8;background:#572f28d8;border:1px solid #ffb5a3;border-radius:12px;padding:12px;margin:14px auto;font-size:12px;display:none}
+@media(pointer:coarse){#touch{display:flex}#mobileGear{display:block}#mini{bottom:198px;width:104px;height:104px;right:14px}#telemetry{bottom:max(100px,calc(env(safe-area-inset-bottom) + 91px));gap:12px}#telemetry .num{font-size:23px}#telemetry .label{font-size:8px}#actions{flex-direction:column;top:91px;right:12px}#actions button{padding:8px 10px}#stall{bottom:185px}}
+@media(max-width:620px){#mast{left:13px;right:13px}.brand{font-size:13px}#journal{left:12px;top:85px;width:min(210px,56vw);padding:11px 13px}#journal h2{font-size:17px;margin:5px 0}#journal p{font-size:10px;line-height:1.42}#journal .journalFoot{font-size:9px;margin-top:8px}#mini{bottom:205px;width:92px;height:92px}#actions{top:87px}#actions button{font-size:9px}#telemetry .divider{height:23px}#telemetry{gap:11px}#mobileGear{bottom:max(91px,calc(env(safe-area-inset-bottom) + 82px))}}
+@media(max-height:560px){#journal{top:62px}#actions{top:60px}#journal p{display:none}#mini{display:none}#telemetry{bottom:94px}#touch{bottom:8px}.pad{height:54px}#intro p{margin:10px auto}#intro .how{margin-top:10px}}
+
+/* v0.3 — cartography, journal and landscape interface */
+@media(pointer:coarse){#mobileGear{bottom:max(161px,calc(env(safe-area-inset-bottom) + 155px))}}
+.sceneInfo .survey-line{font-size:10px;color:#ffe0b4;letter-spacing:.06em;opacity:.93}
+#actions .primaryAction{background:#e9c99c;color:#35332b;text-shadow:none;border-color:#fff0d6;box-shadow:0 3px 16px #231d173b}
+#mini{pointer-events:auto;cursor:pointer}#mini:focus-visible{outline:2px solid #fff7cd}
+.modal{position:fixed;inset:0;z-index:7;background:#161e1acb;backdrop-filter:blur(13px);display:none;align-items:center;justify-content:center;padding:max(15px,env(safe-area-inset-top)) 16px max(15px,env(safe-area-inset-bottom));pointer-events:auto}
+.modal.open{display:flex}.atlasShell{width:min(890px,100%);max-height:100%;overflow:auto;background:#27332eeF;border:1px solid #f3dcbe53;border-radius:23px;box-shadow:0 18px 85px #090e0bae;padding:22px 26px;color:#f5e8d6;scrollbar-color:#a1856b transparent}
+.atlasTop{display:flex;justify-content:space-between;align-items:start;gap:15px}.atlasTop h2{font:normal clamp(31px,6vw,50px)/1 Georgia,serif;letter-spacing:-.04em;margin:10px 0 5px}.titleDot{color:#e5ad78}.atlasTop p{color:#cabda8;font-size:12px;margin:0}.atlasTop button{background:#39463f;border:1px solid #ffffff3b;border-radius:50%;color:#fff3dc;width:37px;height:37px;flex-shrink:0}
+.atlasTabs{display:flex;border-bottom:1px solid #f4e5d143;gap:23px;margin-top:21px}.atlasTabs button{font-size:11px;background:none;border:0;color:#c4baac;padding:0 2px 12px;letter-spacing:.12em;font-weight:750;border-bottom:2px solid transparent}.atlasTabs button.active{color:#fbe6bd;border-color:#f0bf83}
+.atlasPane{padding-top:17px}.atlasMeta{display:flex;justify-content:space-between;gap:10px;color:#e3ccaa;font-size:11px;letter-spacing:.09em;margin-bottom:10px}.atlasMapBox{width:min(100%,435px);position:relative;margin:0 auto;border-radius:14px;overflow:hidden;border:1px solid #b3a48970;background:#29352f}.atlasMapBox canvas{width:100%;aspect-ratio:1;display:block}.mapCompass{position:absolute;top:12px;right:13px;font-size:10px;font-weight:850;color:#f9e7c8;letter-spacing:.2em}
+.regionStats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.regionStat{background:#ffffff09;border:1px solid #ffffff23;padding:12px;border-radius:11px}.regionStat b{display:block;font:normal 16px Georgia,serif}.regionStat span{display:block;color:#e3c9aa;font-size:10px;line-height:1.45;margin-top:5px}.regionStat .progress{height:3px;background:#ffffff2a;margin-top:9px;border-radius:3px;overflow:hidden}.regionStat .progress i{display:block;height:100%;background:#d9a878;border-radius:3px}.atlasHint{color:#d0c4b0;font-size:11px;line-height:1.6;margin:13px 0 0}.atlasHint b{color:#ffd59d}
+.journalSummary{color:#e8d6bd;font:normal 16px/1.5 Georgia,serif;margin-bottom:16px}.journalEntries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.entry{background:#ffffff0c;border:1px solid #ffffff2b;padding:13px 14px;border-radius:13px;min-height:112px}.entry .entryCategory{font-size:9px;letter-spacing:.16em;font-weight:800;color:#edb981}.entry h3{font:normal 19px Georgia,serif;margin:8px 0 7px}.entry p{color:#e3d4bf;font-size:11px;line-height:1.6;margin:0}.entry.locked{opacity:.47}.entry.locked h3{font-style:italic}
+.freshStart{border:none;background:transparent;color:#dba88b;text-decoration:underline;font-size:10px;margin-top:18px;padding:5px}.atlasBottom{border-top:1px solid #ffffff2d;margin-top:16px;padding-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:10px;color:#cbbba8}.atlasBottom button{border:0;background:#e5c69a;border-radius:18px;padding:11px 15px;color:#28352f;font-size:11px;font-weight:800;white-space:nowrap}
+@media (pointer:coarse){#actions{top:85px}#actions button{min-height:34px}#mini{bottom:205px}.atlasShell{padding:17px 16px;border-radius:16px}.atlasTop h2{font-size:35px}.atlasMapBox{width:min(100%,430px)}}
+@media(max-width:620px){#actions .primaryAction{font-size:9px}#journal{max-height:145px;overflow:hidden}.sceneInfo .survey-line{font-size:8px}.regionStat{padding:9px}.regionStat b{font-size:14px}.regionStat span{font-size:9px}.journalEntries{grid-template-columns:1fr}.entry{min-height:88px}.atlasShell{max-height:calc(100dvh - 28px)}.atlasTabs{margin-top:13px}.atlasMeta{font-size:9px}.atlasTop p{font-size:11px}}
+@media(max-height:600px){.modal{align-items:stretch}.atlasShell{max-height:100%}}
+</style>
+</head>
+<body>
+<div id="game"></div><div id="tone"></div>
+<div id="ui">
+  <header id="mast"><div><div class="brand">TRAILBOUND</div><div class="version">THE OPEN ATLAS / v0.3</div></div><div class="sceneInfo"><div id="terrainText">DRY EARTH</div><span id="trip">0 m travelled</span><div class="survey-line" id="surveyLine">0% surveyed · 1 region</div></div></header>
+  <aside id="journal"><div class="eyebrow" id="chapter">FIELD NOTES / 01</div><h2 id="objective">Beyond the river</h2><p id="description">Follow the tracks or leave them behind. Discover the valley, the pines and the sunstone hills.</p><div class="journalFoot"><i class="dot"></i><span id="record">0 / 10 places discovered</span></div></aside>
+  <div id="actions"><button id="atlasButton" class="primaryAction">ATLAS · M</button><button id="camera">CAMERA · C</button><button id="recover">RECOVER · R</button><button id="sound">SOUND OFF</button></div>
+  <div id="notice" aria-live="polite"></div>
+  <div id="mini" role="button" tabindex="0" title="Open exploration atlas"><canvas id="map" width="256" height="256" aria-label="Exploration minimap"></canvas></div>
+  <div id="telemetry"><div><div class="num" id="gear">HIGH</div><div class="label">RANGE · L</div></div><div class="divider"></div><div><div class="num" id="speed">0</div><div class="label">KM/H</div></div><div class="divider"></div><div><div class="num" id="grade">0°</div><div class="label">SLOPE</div></div><div class="divider"></div><div><div class="num" id="traction">100%</div><div id="tractionMeter"><div id="tractionFill"></div></div><div class="label">GRIP</div></div></div>
+  <div id="mobileGear"><button id="gearToggle" class="chip">4×4 LOW · OFF</button></div>
+  <div id="touch"><div id="turnControls"><button class="pad" data-hold="left" aria-label="Steer left">↶</button><button class="pad" data-hold="right" aria-label="Steer right">↷</button></div><div id="driveControls"><button class="pad brake" data-hold="brake" aria-label="Brake and reverse">↓<small>BRAKE</small></button><button class="pad drive" data-hold="gas" aria-label="Accelerate">↑<small>DRIVE</small></button></div></div>
+  <div id="stall"><h3 id="stallTitle">Engine stalled</h3><p id="stallReason">The engine needs restarting.</p><button id="restart">RESTART · E</button><button id="stallRecover">RECOVER</button></div>
+</div>
+<div id="atlas" class="modal" aria-hidden="true"><div class="atlasShell"><header class="atlasTop"><div><div class="eyebrow">FIELD GUIDE / VOLUME ONE</div><h2>The Open Atlas<span class="titleDot">.</span></h2><p>There is more beyond the tracks.</p></div><button id="atlasClose" aria-label="Close atlas">✕</button></header><nav class="atlasTabs"><button id="mapTab" class="active">EXPLORE THE MAP</button><button id="journalTab">FIELD JOURNAL</button></nav><section id="mapView" class="atlasPane"><div class="atlasMeta"><span id="atlasPct">0% of the world surveyed</span><span id="atlasCount">0 / 10 locations</span></div><div class="atlasMapBox"><canvas id="bigMap" width="620" height="620" aria-label="Map of the explored world"></canvas><span class="mapCompass">N ↑</span></div><div class="regionStats" id="regionStats"></div><p class="atlasHint">Unvisited land remains hidden. Tracks and discoveries only appear where you have explored. <b>✦</b> marks a place you found.</p></section><section id="journalView" class="atlasPane" hidden><div class="journalSummary" id="journalSummary"></div><div id="journalEntries" class="journalEntries"></div><button id="freshStart" class="freshStart">BEGIN A NEW JOURNEY</button></section><footer class="atlasBottom"><span id="atlasFoot">A quiet world, kept in your browser.</span><button id="atlasResume">BACK TO DRIVING →</button></footer></div></div>
+<div id="intro"><div class="inner"><div class="sup">AN UNHURRIED DRIVING ADVENTURE · CHAPTER THREE</div><h1>Trailbound.</h1><em>There is more beyond the tracks.</em><p>Three distinct landscapes. Forgotten places. A map you uncover only by travelling. Take the winding road, or make your own.</p><button id="begin" disabled>PREPARING THE WORLD…</button><div id="loading">Building the open atlas</div><div id="bootError"></div><div class="how">WASD / ARROWS drive · SPACE brake · L low range · M atlas<br>C camera · R recover · E restart · controller + touch supported</div></div></div>
+<script type="module">
+let THREE;
+try { THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js'); }
+catch (firstError) {
+  try { THREE = await import('https://unpkg.com/three@0.160.1/build/three.module.js'); }
+  catch (secondError) {
+    document.getElementById('loading').textContent = 'Unable to start the 3D engine';
+    const errorBox=document.getElementById('bootError');errorBox.style.display='block';
+    errorBox.textContent='TRAILBOUND needs an internet connection to load Three.js. If you are online, try opening the file in Safari or Chrome.';
+    throw secondError;
+  }
+}
+
+const $=id=>document.getElementById(id), clamp=THREE.MathUtils.clamp, lerp=THREE.MathUtils.lerp, damp=THREE.MathUtils.damp;
+const PI=Math.PI, TAU=PI*2, smooth=t=>t*t*(3-2*t), fract=v=>v-Math.floor(v);
+const seeded=(a,b,s=0)=>fract(Math.sin(a*127.1+b*311.7+s*74.7)*43758.5453);
+const noise=(x,z,s=0)=>{const ix=Math.floor(x),iz=Math.floor(z),fx=smooth(x-ix),fz=smooth(z-iz);return lerp(lerp(seeded(ix,iz,s),seeded(ix+1,iz,s),fx),lerp(seeded(ix,iz+1,s),seeded(ix+1,iz+1,s),fx),fz)};
+let seed=7391;function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+const WORLD_EDGE=300;
+const REGIONS=[{id:'valley',name:'Copper Valley',hint:'Open trails · river crossings',color:'#b79678'}, {id:'cedar',name:'Cedar Heights',hint:'Woodland · narrow slopes',color:'#6c806a'}, {id:'mesa',name:'Sunstone Mesa',hint:'Red rock · distant views',color:'#a6775f'}];
+function regionAt(x,z){return z<-60&&x<38?'cedar':x>65?'mesa':'valley'}
+const riverX=z=>-7+Math.sin(z*.032)*11+Math.sin(z*.076+1.8)*3.7;
+const waterDepth=z=> .52+1.02*smooth(clamp((Math.abs(z-14)-14)/30,0,1));
+function baseHeight(x,z){const large=(noise(x*.010,z*.010,1)-.5)*10.5,mid=(noise(x*.030+4,z*.030,2)-.5)*3.2,fine=(noise(x*.095,z*.095,3)-.5)*.65;const ridge=clamp((x+z*.20-18)/94,0,1.5),forest=clamp((-z-68)/135,0,1),mesa=clamp((x-100)/140,0,1);return large+mid+fine+ridge*ridge*23+Math.max(0,Math.sin((x+z*.48)*.017))*ridge*4+forest*(4+(noise(x*.020,z*.019,21)-.5)*8)+mesa*7}
+function riverFactor(x,z){return clamp(1-Math.abs(x-riverX(z))/7.2,0,1)}
+function height(x,z){const f=riverFactor(x,z);return baseHeight(x,z)-f*f*(waterDepth(z)+.7)}
+function waterLevel(z){return baseHeight(riverX(z),z)-.64}
+function normalAt(x,z){const e=.85,dx=(height(x+e,z)-height(x-e,z))/(2*e),dz=(height(x,z+e)-height(x,z-e))/(2*e);return {dx,dz,ny:1/Math.sqrt(1+dx*dx+dz*dz)}}
+const path=[];for(let i=0;i<=180;i++){let t=i/180;const x=-102+t*214+Math.sin(t*6.7)*7.5;const z=90-t*183+Math.sin(t*8.3)*8;path.push({x,z})}
+const cedarTrack=[{x:-102,z:90},{x:-122,z:56},{x:-146,z:18},{x:-164,z:-24},{x:-129,z:-65},{x:-136,z:-111},{x:-148,z:-150},{x:-187,z:-198}];
+const mesaTrack=[{x:riverX(14)+9,z:14},{x:36,z:21},{x:81,z:38},{x:122,z:59},{x:165,z:85},{x:202,z:118},{x:223,z:163}];
+const mesaSpur=[{x:60,z:-41},{x:110,z:-75},{x:143,z:-101},{x:191,z:-119}];
+function smoothTrail(knots,spacing=5){const route=[];for(let i=0;i<knots.length-1;i++){const a=knots[i],b=knots[i+1],len=Math.hypot(b.x-a.x,b.z-a.z),steps=Math.max(2,Math.ceil(len/spacing));for(let k=0;k<steps;k++){const t=k/steps;route.push({x:lerp(a.x,b.x,t),z:lerp(a.z,b.z,t)})}}return [...route,knots.at(-1)]}
+const allPaths=[path,smoothTrail(cedarTrack),smoothTrail(mesaTrack),smoothTrail(mesaSpur)];
+function distanceToTrail(x,z){let best=1e8;for(const p of allPaths)for(let i=0;i<p.length;i+=3){const dx=x-p[i].x,dz=z-p[i].z;best=Math.min(best,dx*dx+dz*dz)}return Math.sqrt(best)}
+const isFord=z=>Math.abs(z-14)<14;
+const surfaceTypes={track:{name:'DUSTY TRACK',grip:.96,roll:.12},earth:{name:'DRY EARTH',grip:.85,roll:.24},sand:{name:'LOOSE SAND',grip:.48,roll:.92},rock:{name:'STONE & SCREE',grip:.71,roll:.55},pine:{name:'PINE NEEDLES',grip:.69,roll:.39},gravel:{name:'RED GRAVEL',grip:.60,roll:.73},water:{name:'RIVERBED',grip:.37,roll:1.9}};
+function terrainAt(x,z){let river=Math.abs(x-riverX(z));if(river<6.1)return {...surfaceTypes.water,water:true,depth:waterDepth(z)*clamp((6.5-river)/3.4,0,1)};if(x>35&&z<4&&(noise(x*.048,z*.048,4)>.40))return {...surfaceTypes.rock};if(distanceToTrail(x,z)<3.4)return {...surfaceTypes.track};const s=noise(x*.038+12,z*.038,8),biome=regionAt(x,z);if(biome==='cedar')return {...(s>.70?surfaceTypes.earth:surfaceTypes.pine)};if(biome==='mesa')return {...(s>.52?surfaceTypes.sand:surfaceTypes.gravel)};if(s>.64)return {...surfaceTypes.sand};return {...surfaceTypes.earth}}
+
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xc9a18a);scene.fog=new THREE.FogExp2(0xc9a18a,.0038);
+const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,700);
+let renderer;
+try{renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.55));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.5;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.domElement.style.width='100%';renderer.domElement.style.height='100%';$('game').append(renderer.domElement)}catch(e){$('bootError').style.display='block';$('bootError').textContent='This browser could not start WebGL: '+e.message;throw e}
+scene.add(new THREE.HemisphereLight(0xffe5cf,0x755f52,2.5));const sun=new THREE.DirectionalLight(0xffd5a6,3.15);sun.position.set(-65,120,80);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-65;sun.shadow.camera.right=65;sun.shadow.camera.top=65;sun.shadow.camera.bottom=-65;sun.shadow.normalBias=.037;scene.add(sun);sun.target.position.set(0,0,0);scene.add(sun.target);
+const mat=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness,flatShading:true});
+const rockM=[mat(0x766e67),mat(0x9a8779),mat(0xb09a87),mat(0x665f58)],scrubM=[mat(0x877653),mat(0xa09368),mat(0xb5a27b)],cactusM=mat(0x52634a),paint=mat(0xd94a2b,.68),hood=mat(0xef7e2c),trim=mat(0x2d2c29),glass=mat(0x9eb7b9,.28),metal=mat(0x918a80,.55),headlamp=new THREE.MeshBasicMaterial({color:0xf1e9c7}),tailLamp=new THREE.MeshBasicMaterial({color:0xad392f});
+const tgeo=new THREE.PlaneGeometry(610,610,250,250);tgeo.rotateX(-PI/2);const tpos=tgeo.attributes.position,c=[];let color=new THREE.Color();for(let i=0;i<tpos.count;i++){const x=tpos.getX(i),z=tpos.getZ(i),h=height(x,z),n=noise(x*.17,z*.17,7);tpos.setY(i,h);color.setHSL(.063+n*.013,.23+n*.09,.5+(n-.5)*.12+(h>12?.015:0));const biome=regionAt(x,z);if(biome==='cedar')color.lerp(new THREE.Color(0x78836b),.58);if(biome==='mesa')color.lerp(new THREE.Color(0xb0795b),.62);if(Math.abs(x-riverX(z))<8.5)color.lerp(new THREE.Color(0x927b68),.17);c.push(color.r,color.g,color.b)}tgeo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));tgeo.computeVertexNormals();const ground=new THREE.Mesh(tgeo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,flatShading:true}));ground.receiveShadow=true;scene.add(ground);
+function ribbon(points,width,material,yFn){const vertices=[],uvs=[],ind=[];for(let i=0;i<points.length;i++){const p=points[i],pre=points[Math.max(0,i-1)],next=points[Math.min(points.length-1,i+1)];const dx=next.x-pre.x,dz=next.z-pre.z,L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L;for(const side of [-1,1]){const x=p.x+side*width*.5*nx,z=p.z+side*width*.5*nz;vertices.push(x,yFn(x,z,p)+.042,z);uvs.push(side===-1?0:1,i/5)}if(i>0){const q=2*i;ind.push(q-2,q-1,q,q-1,q+1,q)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));g.setIndex(ind);g.computeVertexNormals();const m=new THREE.Mesh(g,material);m.receiveShadow=false;scene.add(m);return m}
+for(const route of allPaths)ribbon(route,5.3,new THREE.MeshBasicMaterial({color:0x8c6d58,transparent:true,opacity:.34,depthWrite:false,side:THREE.DoubleSide}),(x,z)=>height(x,z));
+const riverPath=[];for(let z=-299;z<=299;z+=2.5)riverPath.push({x:riverX(z),z});const waterMaterial=new THREE.MeshPhongMaterial({color:0x8caa9b,transparent:true,opacity:.82,shininess:110,side:THREE.DoubleSide,depthWrite:false});const riverMesh=ribbon(riverPath,11.4,waterMaterial,(_,__,p)=>waterLevel(p.z));
+// A handful of wet-looking stones in the shallow ford indicate the best crossing.
+function box(parent,w,h,d,m,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
+const scenery=new THREE.Group();scene.add(scenery);const colliders=[];
+function instanced(geometry,material,entries,shadow=false){if(!entries.length)return;const mesh=new THREE.InstancedMesh(geometry,material,entries.length);const d=new THREE.Object3D();entries.forEach((v,i)=>{d.position.set(v.x,v.y,v.z);d.rotation.set(v.rx||0,v.ry||0,v.rz||0);d.scale.set(v.sx||v.s,v.sy||v.s,v.sz||v.s);d.updateMatrix();mesh.setMatrixAt(i,d.matrix)});mesh.instanceMatrix.needsUpdate=true;mesh.castShadow=shadow;mesh.receiveShadow=true;scenery.add(mesh)}
+const rocks=[[],[],[],[]],plants=[[],[],[]],cacti=[];for(let i=0;i<2080;i++){let x=(rnd()-.5)*588,z=(rnd()-.5)*588;const riverD=Math.abs(x-riverX(z));if(Math.hypot(x+102,z-90)<12)continue;if(riverD<7)continue;const y=height(x,z),r=rnd(),onTrail=distanceToTrail(x,z)<3.9;if(r<.42){let s=.22+rnd()*2.15;if(onTrail&&s>.65)continue;if(x>36&&z<-8&&rnd()>.5)s*=1.2;const idx=Math.floor(rnd()*4);rocks[idx].push({x,y:y+s*.27,z,s,ry:rnd()*TAU,sx:s*(.85+rnd()*.6),sy:s*(.48+rnd()*.48),sz:s*(.9+rnd()*.45)});if(s>.85)colliders.push({x,z,r:s*.68,hard:true})}else if(r<.92){let s=.3+rnd()*.68;plants[Math.floor(rnd()*3)].push({x,y:y+s*.26,z,s:s*(.72+rnd()*.5),ry:rnd()*TAU,sy:s*(.3+rnd()*.45)})}else{const s=.6+rnd()*1.2;cacti.push({x,y:y+s*.65,z,s,ry:rnd()*TAU})}}
+for(let i=0;i<4;i++)instanced(new THREE.DodecahedronGeometry(1,0),rockM[i],rocks[i]);for(let i=0;i<3;i++)instanced(new THREE.IcosahedronGeometry(1,0),scrubM[i],plants[i]);instanced(new THREE.CylinderGeometry(.22,.28,1.45,5),cactusM,cacti);
+const markers=new THREE.Group();scene.add(markers);function pile(x,z){const group=new THREE.Group();group.position.set(x,height(x,z),z);for(let i=0;i<4;i++){const m=new THREE.Mesh(new THREE.DodecahedronGeometry(.55-i*.1,0),rockM[i%4]);m.position.set((i%2-.5)*.12,.27+i*.33,0);m.rotation.y=i*.46;m.castShadow=true;group.add(m)}markers.add(group)}for(let zz of [2,13,25])for(let side of [-1,1])pile(riverX(zz)+side*9.1,zz);
+// The saddle is intentionally rocky, but has room to weave between stones.
+for(let i=0;i<54;i++){let x=46+rnd()*62,z=-65+rnd()*52;let h=height(x,z),r=.75+rnd()*1.9;const o=new THREE.Mesh(new THREE.DodecahedronGeometry(r,0),rockM[Math.floor(rnd()*4)]);o.scale.set(1.15,.6+rnd()*.25,1.1);o.position.set(x,h+r*.48,z);o.rotation.y=rnd()*TAU;o.castShadow=false;markers.add(o);colliders.push({x,z,r:r*.85,hard:true})}
+// Mountain lookout, visual beacon and a small lean-to at the pass.
+const lookout={x:110,z:-91},pass={x:61,z:-43},ford={x:riverX(14),z:14};const tower=new THREE.Group();tower.position.set(lookout.x,height(lookout.x,lookout.z),lookout.z);scene.add(tower);for(const x of [-1.6,1.6])for(const z of [-1.6,1.6])box(tower,.28,4.8,.28,metal,x,2.4,z);box(tower,4.1,.38,4.1,rockM[1],0,4.7,0);for(let a of [-1.7,1.7]){box(tower,.12,.16,4,metal,a,5.7,0);box(tower,4,.16,.12,metal,0,5.7,a)}box(tower,.09,7,.09,trim,0,8.3,0);const beacon=new THREE.Mesh(new THREE.OctahedronGeometry(.55),new THREE.MeshBasicMaterial({color:0xffdb9e}));beacon.position.set(0,12.2,0);tower.add(beacon);
+const sign=new THREE.Group();sign.position.set(pass.x,height(pass.x,pass.z),pass.z);scene.add(sign);box(sign,.25,3,.25,metal,0,1.5,0);box(sign,2.9,.65,.16,rockM[1],1.12,2.7,0);box(sign,.09,3.4,.09,metal,0,1.7,0);
+
+// Cedar forest: cones, trunks, and darker low poly foliage assembled with instancing.
+const forestTrunks=[],forestCrownLower=[],forestCrownUpper=[],forestFloor=[],mesaPillars=[];
+for(let i=0;i<720;i++){
+ const x=(rnd()-.5)*580,z=(rnd()-.5)*580,biome=regionAt(x,z),y=height(x,z);
+ if(biome==='cedar'){
+   if(distanceToTrail(x,z)<6.3||Math.hypot(x+148,z+150)<11||Math.hypot(x+120,z+90)<11)continue;
+   if(rnd()<.77){const s=1.2+rnd()*2.7;forestTrunks.push({x,y:y+s*.52,z,s:s*.28,sy:s*1.8,sx:.3,sz:.3});forestCrownLower.push({x,y:y+s*1.65,z,s:s*.8,sx:s*.78,sy:s*1.35,sz:s*.78,ry:rnd()*6.28});forestCrownUpper.push({x,y:y+s*2.34,z,s:s*.60,sx:s*.59,sy:s*1.1,sz:s*.59,ry:rnd()*6.28});if(s>2.9&&rnd()<.3)colliders.push({x,z,r:.54})}
+   else forestFloor.push({x,y:y+.16,z,s:.55+rnd()*.9,sy:.23,ry:rnd()*TAU});
+ }else if(biome==='mesa'&&rnd()<.20&&distanceToTrail(x,z)>6){const s=2.0+rnd()*4.7;mesaPillars.push({x,y:y+s*.55,z,s,sy:s*1.10,sx:s*.42,sz:s*.38,ry:rnd()*6.28});if(s>4)colliders.push({x,z,r:s*.32})}
+}
+instanced(new THREE.CylinderGeometry(.26,.36,2.5,5),mat(0x665c48),forestTrunks);
+instanced(new THREE.ConeGeometry(1,2.0,5),mat(0x516956),forestCrownLower);
+instanced(new THREE.ConeGeometry(.9,1.85,5),mat(0x728369),forestCrownUpper);
+instanced(new THREE.IcosahedronGeometry(1,0),mat(0x718065),forestFloor);
+instanced(new THREE.CylinderGeometry(.86,1.22,2,6),mat(0xa86c53),mesaPillars);
+// Environmental storytelling. These are permanent world objects, not pop-up level markers.
+const timber=mat(0x796551),timberDark=mat(0x504d42),canvasMat=mat(0xc1a888),warmStone=mat(0xbd8160),lightGold=new THREE.MeshBasicMaterial({color:0xffc789}),quietGreen=mat(0x71816a);
+function groupAt(x,z){const g=new THREE.Group();g.position.set(x,height(x,z),z);scene.add(g);return g}
+function cabinAt(x,z){const g=groupAt(x,z);box(g,7,3.6,5,timber,0,1.8,0);box(g,7.8,.23,5.5,timberDark,0,3.86,0).rotation.z=.045;box(g,1.75,2.4,.12,timberDark,-1.2,1.25,-2.54);box(g,1.15,1.0,.13,glass,1.65,2.12,-2.53);box(g,1.5,.24,5.6,timberDark,-3.0,3.64,0);for(let i=0;i<3;i++)box(g,.2,.45,4,timberDark,-2.7+i*2.6,4.2,0);colliders.push({x,z,r:3.4});return g}
+cabinAt(-148,-150);
+function stonesAt(x,z){const g=groupAt(x,z);for(let i=0;i<6;i++){const a=i*TAU/6,r=4.7+(i%2)*.8,o=new THREE.Mesh(new THREE.DodecahedronGeometry(.95,0),rockM[i%4]);o.scale.set(.73,2.5+(i%3)*.43,.86);o.position.set(Math.sin(a)*r,1.85,Math.cos(a)*r);o.rotation.y=a;g.add(o)}return g}
+stonesAt(-189,-203);
+function archAt(x,z){const g=groupAt(x,z);box(g,3.5,8,3.2,warmStone,-4,4,0).rotation.z=.10;box(g,3.5,8,3.2,warmStone,4,4,0).rotation.z=-.10;box(g,11,3.0,3.6,warmStone,0,8.1,0);colliders.push({x:x-4,z,r:2.2},{x:x+4,z,r:2.2})}
+archAt(195,73);
+function campAt(x,z){const g=groupAt(x,z);for(let i=0;i<7;i++){const a=i*TAU/7;box(g,.7,.45,.6,rockM[i%4],Math.cos(a)*1.9,.24,Math.sin(a)*1.9)}box(g,3,1.5,2.7,canvasMat,-5,1.3,2).rotation.z=-.15;box(g,2.2,.15,3,timberDark,4,.4,2);const ember=new THREE.Mesh(new THREE.IcosahedronGeometry(.4,0),lightGold);ember.position.set(0,.5,0);g.add(ember)}
+campAt(-215,18);
+function quarryAt(x,z){const g=groupAt(x,z);for(let i=0;i<16;i++){const a=i*2.4,r=3+(i%4)*2.4;const o=new THREE.Mesh(new THREE.DodecahedronGeometry(1+(i%4)*.55,0),rockM[i%4]);o.position.set(Math.cos(a)*r,.7+(i%3)*.35,Math.sin(a)*r);o.scale.set(1,.7,1.2);g.add(o)}box(g,.22,3,.2,timber,8,1.5,3);box(g,3,.7,.2,timber,9.2,3,3)}
+quarryAt(222,154);
+function mastAt(x,z){const g=groupAt(x,z);for(const a of [-1.7,1.7])for(const b of [-1.7,1.7])box(g,.20,9,.20,metal,a,4.5,b);for(let y=2;y<=9;y+=2.1){box(g,4,.14,.2,metal,0,y,0);box(g,.2,.14,4,metal,0,y,0)}box(g,.16,7,.16,metal,0,12,0);box(g,2.3,.25,1.6,rockM[1],0,9,0);const tip=new THREE.Mesh(new THREE.OctahedronGeometry(.5),lightGold);tip.position.y=16;g.add(tip)}
+mastAt(186,-119);
+const rangerSign=groupAt(-123,-89);box(rangerSign,.18,2.7,.18,timber,0,1.35,0);box(rangerSign,2.4,.68,.12,timberDark,0,2.6,0);
+const brokenBridge=groupAt(-120,-90);for(let i=0;i<3;i++)box(brokenBridge,1.4,.22,2.2,timber,-3+i*1.75,.48,1+i*.8);
+const eastMarker=groupAt(101,57);box(eastMarker,.19,3,.19,timber,0,1.5,0);box(eastMarker,2.7,.63,.16,timberDark,0,2.95,0);
+
+// Low-poly 4×4. Local forward is -Z and steering/physics use the exact same convention.
+const carRoot=new THREE.Group();scene.add(carRoot);const body=new THREE.Group();carRoot.add(body);
+box(body,2.25,.65,3.45,paint,0,1.04,.05);box(body,2.18,.21,1.5,hood,0,1.41,-1.05);box(body,2.10,.90,1.63,paint,0,1.89,.43);box(body,2.17,.18,1.75,paint,0,2.41,.40);box(body,1.87,.63,.054,glass,0,1.97,-.42);box(body,1.92,.61,.055,glass,0,1.97,1.27);for(const side of [-1,1]){box(body,.055,.61,1.26,glass,side*1.055,1.97,.45);box(body,.21,.27,3.05,trim,side*1.22,.77,0);box(body,.28,.22,.08,headlamp,side*.88,1.22,-1.82);box(body,.30,.17,.08,tailLamp,side*.9,1.17,1.83)}box(body,2.48,.26,.38,trim,0,.81,-1.86);box(body,2.48,.25,.36,trim,0,.80,1.84);box(body,1.18,.34,.10,trim,0,1.08,-1.85);box(body,1.7,.15,.6,metal,0,2.53,.71);box(body,.08,.1,2.1,trim,-.97,2.56,.29);box(body,.08,.1,2.1,trim,.97,2.56,.29);box(body,.09,1.9,.09,trim,1.08,2.17,-1.16);box(body,.15,.08,.50,hood,-.52,1.54,-1.34);box(body,.15,.08,.50,hood,.52,1.54,-1.34);
+const tireShape=new THREE.CylinderGeometry(.55,.55,.39,11);tireShape.rotateZ(PI/2);const hubShape=new THREE.CylinderGeometry(.245,.245,.415,8);hubShape.rotateZ(PI/2);const tires=[];for(const side of [-1,1])for(const front of [true,false]){const axle=new THREE.Group();carRoot.add(axle);const steering=new THREE.Group();axle.add(steering);const wheel=new THREE.Mesh(tireShape,trim);wheel.castShadow=true;steering.add(wheel);const hub=new THREE.Mesh(hubShape,metal);steering.add(hub);tires.push({side,front,z:front?-1.10:1.1,x:side*1.17,axle,steering,wheel,spin:0})}const spare=new THREE.Mesh(tireShape,trim);spare.rotation.y=PI/2;spare.position.set(0,1.44,1.91);body.add(spare);
+
+const controls={gas:false,brake:false,left:false,right:false};let started=false,view=0,last=performance.now(),noticeTimer=0,mapAccum=0,uiAccum=0,gamepadPrev=false;
+let audio=null,osc=null,filter=null,gain=null,muted=true;
+const defaultState={x:-102,z:90,y:0,heading:-.77,v:0,side:0,steer:0,roll:0,pitch:0,low:false,engine:true,reason:'',stuckFor:0,deepFor:0,impactCooldown:0,odometer:0,smoke:0};const car={...defaultState};const discovered=new Set();const PERSIST='trailbound-v03-discoveries',POSITION_KEY='trailbound-v03-position',EXPLORE_KEY='trailbound-v03-survey';
+try{const saved=JSON.parse(localStorage.getItem(PERSIST)||localStorage.getItem('trailbound-v02-discoveries')||'[]');if(Array.isArray(saved))saved.forEach(id=>discovered.add(id))}catch{}
+try{const saved=JSON.parse(localStorage.getItem(POSITION_KEY)||'null');if(saved&&Number.isFinite(saved.x)&&Number.isFinite(saved.z)&&Math.abs(saved.x)<290&&Math.abs(saved.z)<290&&Number.isFinite(saved.heading)){car.x=saved.x;car.z=saved.z;car.heading=saved.heading;car.odometer=saved.odometer||0;car.low=Boolean(saved.low)}}catch{}
+let safe={x:car.x,z:car.z,heading:car.heading},safeClock=0;
+function showToast(text){$('notice').textContent=text;$('notice').classList.add('on');clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').classList.remove('on'),3100)}
+function toggleLow(){car.low=!car.low;$('gearToggle').textContent=car.low?'4×4 LOW · ON':'4×4 LOW · OFF';showToast(car.low?'Low range engaged. Slow, deliberate torque.':'High range engaged. Enjoy the open track.')}
+function stall(reason){if(!car.engine)return;car.engine=false;car.v=0;car.side=0;car.reason=reason;$('stallReason').textContent=reason;$('stall').style.display='block';showToast('Engine stalled. Nothing is lost.')}
+function restart(){if(car.engine)return;const t=terrainAt(car.x,car.z);if(t.water&&t.depth>.9){$('stallReason').textContent='The water is too deep to restart here. Recover to the last safe ground.';return}car.engine=true;car.stuckFor=0;car.deepFor=0;car.v=0;$('stall').style.display='none';showToast('Engine restarted. Ease onto the throttle.')}
+function recover(){car.x=safe.x;car.z=safe.z;car.heading=safe.heading;car.v=0;car.side=0;car.steer=0;car.engine=true;car.stuckFor=0;car.deepFor=0;car.roll=0;car.pitch=0;car.y=height(car.x,car.z);$('stall').style.display='none';showToast('Recovered to the last firm stopping place.')}
+
+const objectives=[
+{id:'ford',name:'The stone ford',region:'valley',description:'Six cairns lead toward the one place where the river can be crossed without risking the engine.',story:'You find an old route across the water. The cairns were built for travellers who did not need a bridge.',x:ford.x,z:ford.z,r:15},
+{id:'pass',name:'Through the saddle',region:'mesa',description:'The rocky ascent rewards patience. Choose the gaps, not the straight line.',story:'Tyre marks disappear between the stones. What looks impassable becomes possible at walking pace.',x:pass.x,z:pass.z,r:16},
+{id:'lookout',name:'The quiet overlook',region:'mesa',description:'A watchtower overlooks both sides of the valley. The last climb is steeper than it looks.',story:'From here the winding valley is a map written in earth. The road keeps going, beyond what you can see.',x:lookout.x,z:lookout.z,r:17},
+{id:'cabin',name:'The ranger’s cabin',region:'cedar',description:'Deep in the pines, a timber shelter watches over an almost-forgotten track.',story:'The cabin door is shut. Someone has carefully stacked wood beside it, as though planning to return.',x:-148,z:-150,r:14},
+{id:'stones',name:'The listening stones',region:'cedar',description:'An unlikely ring of tall stones stands in the furthest reaches of the forest.',story:'No plaque explains the circle. Wind passes through the stones with a low, strangely musical note.',x:-189,z:-203,r:15},
+{id:'stillwater',name:'Stillwater bend',region:'cedar',description:'Where the trees thicken, a quiet bend hides beside the old path.',story:'Here the landscape seems to hold its breath. You switch off the engine and listen for a while.',x:-120,z:-90,r:17},
+{id:'arch',name:'The wind arch',region:'mesa',description:'Two weathered columns hold an improbable stone bridge high above the track.',story:'The wind has worn an opening through the red stone. Long before roads, this was a landmark.',x:195,z:73,r:15},
+{id:'quarry',name:'The abandoned quarry',region:'mesa',description:'Fragments of cut stone scatter across the east-facing hillside.',story:'Work ended here years ago. In the quiet, the half-finished stonework feels like an unfinished sentence.',x:222,z:154,r:19},
+{id:'mast',name:'The signal mast',region:'mesa',description:'A solitary communications tower stands beyond the rocky saddle.',story:'The aerial still catches the light. Its signal has long since fallen silent.',x:186,z:-119,r:16},
+{id:'camp',name:'The forgotten camp',region:'valley',description:'A small ring of stones lies well off the western track.',story:'A weathered tent, a cold fire, and no footprints. Someone stopped here and decided not to stay.',x:-215,z:18,r:14}
+];
+const EXP_N=40,EXP_HALF=WORLD_EDGE,EXP_SIZE=EXP_N*EXP_N,explored=new Uint8Array(EXP_SIZE);let atlasOpen=false,atlasTab='map',savedAt=0,exploreAccum=0,frameSinceSave=0;
+try{const saved=localStorage.getItem(EXPLORE_KEY);if(saved&&saved.length===EXP_SIZE)for(let i=0;i<EXP_SIZE;i++)explored[i]=saved[i]==='1'?1:0}catch{}
+const cellSize=WORLD_EDGE*2/EXP_N;
+function cellIndex(x,z){const ix=Math.floor((x+WORLD_EDGE)/cellSize),iz=Math.floor((z+WORLD_EDGE)/cellSize);if(ix<0||iz<0||ix>=EXP_N||iz>=EXP_N)return -1;return iz*EXP_N+ix}
+function exploredAt(x,z){const idx=cellIndex(x,z);return idx>=0&&explored[idx]===1}
+function reveal(x,z){let changed=false;for(let dz=-2;dz<=2;dz++)for(let dx=-2;dx<=2;dx++){if(dx*dx+dz*dz>4.5)continue;const idx=cellIndex(x+dx*cellSize,z+dz*cellSize);if(idx>=0&&!explored[idx]){explored[idx]=1;changed=true}}return changed}
+function totalSurvey(){let n=0;for(const c of explored)n+=c;return Math.round(n/EXP_SIZE*100)}
+function regionSurvey(reg){let all=0,done=0;for(let z=0;z<EXP_N;z++)for(let x=0;x<EXP_N;x++){const cx=-WORLD_EDGE+(x+.5)*cellSize,cz=-WORLD_EDGE+(z+.5)*cellSize;if(regionAt(cx,cz)!==reg)continue;all++;if(explored[z*EXP_N+x])done++}return {all,done,pct:Math.round(done/Math.max(1,all)*100)}}
+function saveProgress(){try{localStorage.setItem(PERSIST,JSON.stringify([...discovered]));localStorage.setItem(EXPLORE_KEY,Array.from(explored).join(''));localStorage.setItem(POSITION_KEY,JSON.stringify({x:safe.x,z:safe.z,heading:safe.heading,low:car.low,odometer:car.odometer}))}catch{}}
+function saveDiscoveries(){saveProgress()}
+function updateJournal(){const unseen=objectives.filter(o=>!discovered.has(o.id));const next=unseen[0];$('record').textContent=discovered.size+' / '+objectives.length+' places discovered';$('chapter').textContent=regionAt(car.x,car.z)==='cedar'?'FIELD NOTES / CEDAR':regionAt(car.x,car.z)==='mesa'?'FIELD NOTES / MESA':'FIELD NOTES / VALLEY';$('objective').textContent=next?'Go a little further':'All roads are yours';$('description').textContent=next?'No destination is compulsory. '+(discovered.size===0?'Try the ford, then follow the horizon.':'You have found '+discovered.size+' places. The next may be just over a rise.'):'All ten stories are in your journal. Keep wandering, or revisit a difficult crossing.'}
+function refreshAtlas(){const pct=totalSurvey();$('atlasPct').textContent=pct+'% of the world surveyed';$('atlasCount').textContent=discovered.size+' / '+objectives.length+' locations';$('regionStats').replaceChildren(...REGIONS.map(r=>{const v=regionSurvey(r.id),e=document.createElement('div');e.className='regionStat';e.innerHTML='<b>'+r.name+'</b><span>'+r.hint+' · '+v.pct+'% surveyed</span><div class="progress"><i style="width:'+v.pct+'%"></i></div>';return e}));
+$('journalSummary').textContent=discovered.size+' stories collected. '+(discovered.size?'Every stop is part of your journey.':'Nothing has been recorded yet. Follow a track until you find somewhere worth stopping.');$('journalEntries').replaceChildren(...objectives.map((o,i)=>{const found=discovered.has(o.id),e=document.createElement('article');e.className='entry'+(found?'':' locked');const c=document.createElement('div');c.className='entryCategory';c.textContent=found?REGIONS.find(r=>r.id===o.region).name.toUpperCase():'UNDISCOVERED / '+String(i+1).padStart(2,'0');const h=document.createElement('h3');h.textContent=found?o.name:'An unwritten page';const p=document.createElement('p');p.textContent=found?o.story:'There are still places that only the road can reveal.';e.append(c,h,p);return e}));drawAtlasMap()}
+function setAtlasTab(tab){atlasTab=tab;$('mapView').hidden=tab!=='map';$('journalView').hidden=tab!=='journal';$('mapTab').classList.toggle('active',tab==='map');$('journalTab').classList.toggle('active',tab==='journal');refreshAtlas()}
+function openAtlas(tab='map'){if(!started)return;atlasOpen=true;Object.keys(controls).forEach(k=>controls[k]=false);$('atlas').classList.add('open');$('atlas').setAttribute('aria-hidden','false');if(audio&&gain)gain.gain.setTargetAtTime(.0002,audio.currentTime,.15);setAtlasTab(tab)}
+function closeAtlas(){atlasOpen=false;$('atlas').classList.remove('open');$('atlas').setAttribute('aria-hidden','true');last=performance.now();saveProgress()}
+updateJournal();
+reveal(car.x,car.z);
+function controlsNow(){const pads=navigator.getGamepads?.()||[];const gp=Array.from(pads).find(p=>p&&p.connected);let steer=(controls.left?1:0)-(controls.right?1:0),gas=controls.gas?1:0,brake=controls.brake?1:0;if(gp){const axis=gp.axes?.[0]||0;const leftAmount=Math.abs(axis)>.14?-axis:0;steer=clamp(steer+leftAmount,-1,1);gas=Math.max(gas,gp.buttons?.[7]?.value||0);brake=Math.max(brake,gp.buttons?.[6]?.value||0);const lowPressed=Boolean(gp.buttons?.[2]?.pressed);if(lowPressed&&!gamepadPrev)toggleLow();gamepadPrev=lowPressed}return {steer,gas,brake}}
+function wheelWorld(t){const sin=Math.sin(car.heading),cos=Math.cos(car.heading);return {x:car.x+t.x*cos+t.z*sin,z:car.z-t.x*sin+t.z*cos}}
+function update(dt,time){if(!started||atlasOpen)return;const input=controlsNow(),terrain=terrainAt(car.x,car.z),n=normalAt(car.x,car.z);
+// Vehicle basis: rotated local -Z is (-sin(yaw),-cos(yaw)); right is (cos(yaw),-sin(yaw)).
+const fx=-Math.sin(car.heading),fz=-Math.cos(car.heading),rx=Math.cos(car.heading),rz=-Math.sin(car.heading);const uphill=n.dx*fx+n.dz*fz,cross=n.dx*rx+n.dz*rz;const slopeDegrees=Math.atan(Math.hypot(n.dx,n.dz))*180/PI;
+car.steer=damp(car.steer,input.steer,6,dt);let grip=terrain.grip;
+if(slopeDegrees>18)grip*=clamp(1-(slopeDegrees-18)*.009,.60,1);
+const topSpeed=car.low?7.2:17.1,reverseMax=car.low?3.0:5.7;
+let throttle=0,wheelspin=0;
+if(car.engine){
+  if(input.gas>.02){let desired=input.gas*(car.low?6.5:7.5);const traction=grip*(car.low?9:5.6);wheelspin=clamp((desired-traction)/6,0,.85);throttle=Math.min(desired,traction)* (1-wheelspin*.28)}
+  if(input.brake>.02){if(car.v>.4)throttle-=input.brake*(11.4*grip+2);else throttle-=input.brake*3.8*grip}
+}
+// Rolling hills have real gravitational pull; sand, stones and water dissipate momentum.
+const gradeForce=-8.7*uphill;const baseDrag=(.23+terrain.roll*.55)*Math.sign(car.v||0)+car.v*(.11+.010*Math.abs(car.v));
+let accel=throttle+gradeForce-baseDrag;if(!car.engine)accel=gradeForce-car.v*.65;
+car.v=clamp(car.v+accel*dt,-reverseMax,topSpeed);
+if(!input.gas&&!input.brake&&Math.abs(car.v)<.06&&Math.abs(gradeForce)<.65)car.v=0;
+// Grip governs response to turning, while lateral hillside drift provides readable weight.
+const steeringAngle=car.steer*(car.low?.50:.48)/(1+Math.abs(car.v)*.035);
+let yawRate=(car.v/2.7)*Math.tan(steeringAngle)*clamp(grip/.78,.4,1.04);car.heading+=yawRate*dt;
+const sideAccel=-4.6*cross +yawRate*car.v*.10;
+car.side=clamp(car.side+(sideAccel-car.side*(3.7*grip+.7))*dt,-2.6,2.6);
+let nx=car.x+(-Math.sin(car.heading)*car.v+Math.cos(car.heading)*car.side)*dt;
+let nz=car.z+(-Math.cos(car.heading)*car.v-Math.sin(car.heading)*car.side)*dt;
+let hit=false;
+for(const o of colliders){const dx=nx-o.x,dz=nz-o.z,limit=o.r+.87;if(Math.abs(dx)>limit||Math.abs(dz)>limit)continue;const d2=dx*dx+dz*dz;if(d2<limit*limit){const d=Math.sqrt(d2)||.0001;nx=o.x+dx/d*limit;nz=o.z+dz/d*limit;car.v*=.35;car.side*=.2;hit=true;break}}
+const border=WORLD_EDGE-6;nx=clamp(nx,-border,border);nz=clamp(nz,-border,border);
+car.odometer+=Math.hypot(nx-car.x,nz-car.z);car.x=nx;car.z=nz;
+if(hit&&car.impactCooldown<=0){showToast('A rock blocks the line. Back up and try another approach.');car.impactCooldown=3}
+car.impactCooldown-=dt;
+// High water can stall the engine; the marked ford is shallow and forgiving.
+if(car.engine&&terrain.water&&terrain.depth>1.08){car.deepFor+=dt*(.8+Math.abs(car.v)*.10);if(car.deepFor>1.7)stall('Deep water stopped the engine. Try the cairn-marked shallows.')}else car.deepFor=Math.max(0,car.deepFor-2*dt);
+// Long, unsuccessful wheelspin on a steep climb can stall. Reverse or change line beforehand.
+const struggling=car.engine&&input.gas>.5&&Math.abs(car.v)<.42&&(uphill>.48||hit)&&terrain.depth<.9;
+car.stuckFor=struggling?car.stuckFor+dt:Math.max(0,car.stuckFor-dt*2);
+if(car.stuckFor>3.7)stall('The tyres lost traction on the climb. Restart, select low range and choose a shallower line.');
+// Store only real dry stopping positions; recovery never resets discoveries.
+safeClock+=dt;if(safeClock>.75){safeClock=0;if(car.engine&&terrain.grip>.68&&!terrain.water&&slopeDegrees<16&&Math.abs(car.v)<9&&!hit)safe={x:car.x,z:car.z,heading:car.heading}}
+const groundY=height(car.x,car.z);car.y=damp(car.y,groundY,7,dt);
+const wheelH=[];for(const t of tires){const q=wheelWorld(t);wheelH.push(height(q.x,q.z))}
+const frontAvg=(wheelH[0]+wheelH[2])*.5,rearAvg=(wheelH[1]+wheelH[3])*.5;
+const leftAvg=(wheelH[0]+wheelH[1])*.5,rightAvg=(wheelH[2]+wheelH[3])*.5;
+const pitch=Math.atan2(frontAvg-rearAvg,2.2),roll=Math.atan2(rightAvg-leftAvg,2.34);
+car.pitch=damp(car.pitch,clamp(pitch,-.34,.34),5,dt);car.roll=damp(car.roll,clamp(roll-car.steer*Math.abs(car.v)*.009,-.30,.30),5,dt);
+carRoot.position.set(car.x,car.y,car.z);carRoot.rotation.y=car.heading;
+body.rotation.set(-car.pitch,0,-car.roll,'YXZ');body.position.y=damp(body.position.y,.025+Math.sin(time*.012)*Math.min(.036,Math.abs(car.v)*.003),8,dt);
+for(let i=0;i<tires.length;i++){const t=tires[i];const ty=wheelH[i]+.54-car.y;t.axle.position.set(t.x,clamp(ty,.15,1.13),t.z);t.steering.rotation.y=t.front?car.steer*.41:0;t.spin-=car.v*dt/.55;t.wheel.rotation.x=t.spin}
+// Camera: smooth follow in driving direction, elevated enough to read wheel placement.
+const dist=[12.3,19.5,8.8][view],elev=[8,14.8,4.6][view];const cx=car.x+Math.sin(car.heading)*dist,cz=car.z+Math.cos(car.heading)*dist;
+const camTarget=new THREE.Vector3(cx,car.y+elev,cz);camera.position.lerp(camTarget,1-Math.exp(-3.3*dt));const aheadX=car.x-Math.sin(car.heading)*2.5,aheadZ=car.z-Math.cos(car.heading)*2.5;camera.lookAt(aheadX,car.y+1.4,aheadZ);
+// Keep the shadow following the player, not at the world origin.
+sun.position.set(car.x-65,car.y+120,car.z+80);sun.target.position.set(car.x,car.y,car.z);
+for(const o of objectives){if(!discovered.has(o.id)&&Math.hypot(car.x-o.x,car.z-o.z)<o.r){discovered.add(o.id);saveDiscoveries();updateJournal();showToast(o.name.toUpperCase()+'  ✦  FIELD NOTE ADDED')}}
+exploreAccum+=dt;frameSinceSave+=dt;if(exploreAccum>.46){exploreAccum=0;reveal(car.x,car.z);updateJournal()}if(frameSinceSave>5.5){frameSinceSave=0;saveProgress()}
+uiAccum+=dt;if(uiAccum>.085){uiAccum=0;$('speed').textContent=Math.round(Math.abs(car.v)*3.6);$('gear').textContent=car.low?'LOW':'HIGH';$('grade').textContent=Math.round(slopeDegrees)+'°';$('terrainText').textContent=terrain.name+(wheelspin>.25?' · WHEELSPIN':'');$('trip').textContent=Math.floor(car.odometer)+' m travelled';$('surveyLine').textContent=totalSurvey()+'% surveyed · '+REGIONS.find(r=>r.id===regionAt(car.x,car.z)).name;const gr=Math.round(grip*100);$('traction').textContent=gr+'%';$('tractionFill').style.width=gr+'%';$('tractionFill').style.background=gr<53?'#e9a179':gr<75?'#f0c48e':'#f7dfb0'}
+if(audio&&osc){const rpm=75+Math.abs(car.v)*12+(input.gas*35);osc.frequency.setTargetAtTime(rpm,audio.currentTime,.13);gain.gain.setTargetAtTime(muted?0:car.engine?(.006+input.gas*.004):.0008,audio.currentTime,.15)}
+mapAccum+=dt;if(mapAccum>.095){mapAccum=0;drawMap()}
+}
+// Hand-drawn-feeling map: only explored tiles, road fragments and discovered places are visible.
+function worldToCanvas(x,z,ox,oz,scale,w){return {x:w/2+(x-ox)*scale,y:w/2+(z-oz)*scale}}
+function drawCartography(ctx,w,ox,oz,scale,isMini){ctx.save();ctx.clearRect(0,0,w,w);ctx.fillStyle='#28342d';ctx.fillRect(0,0,w,w);const tile=cellSize*scale;
+for(let iz=0;iz<EXP_N;iz++)for(let ix=0;ix<EXP_N;ix++){
+ const idx=iz*EXP_N+ix;if(!explored[idx])continue;
+ const x=-WORLD_EDGE+ix*cellSize,z=-WORLD_EDGE+iz*cellSize,cx=x+cellSize/2,cz=z+cellSize/2,p=worldToCanvas(x,z,ox,oz,scale,w);
+ if(p.x>w||p.y>w||p.x+tile<0||p.y+tile<0)continue;
+ const bi=regionAt(cx,cz),noiseVal=noise(cx*.04,cz*.04,44);
+ ctx.fillStyle=bi==='cedar'?noiseVal>.5?'#70806b':'#65765f':bi==='mesa'?noiseVal>.5?'#a98469':'#a1785f':noiseVal>.5?'#bea080':'#b29575';ctx.fillRect(p.x-.3,p.y-.3,tile+.6,tile+.6)
+ }
+ // Revealed rivers and paths use short separate strokes so the fog stays meaningful.
+ const waterPoints=[];for(let z=-295;z<=295;z+=3)waterPoints.push({x:riverX(z),z});
+ function revealLine(route,width,color){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i],midX=(a.x+b.x)*.5,midZ=(a.z+b.z)*.5;if(!exploredAt(midX,midZ))continue;const p=worldToCanvas(a.x,a.z,ox,oz,scale,w),q=worldToCanvas(b.x,b.z,ox,oz,scale,w);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}}
+ revealLine(waterPoints,isMini?6:10,'#7ba4a1');for(const p of allPaths)revealLine(p,isMini?2.3:3.4,'#e1c2a0');
+ // Unknown landmarks never show through the unexplored fog.
+ for(const o of objectives){if(!discovered.has(o.id))continue;const p=worldToCanvas(o.x,o.z,ox,oz,scale,w);if(p.x<-15||p.y<-15||p.x>w+15||p.y>w+15)continue;ctx.beginPath();ctx.arc(p.x,p.y,isMini?4:6,0,TAU);ctx.fillStyle='#f9d396';ctx.fill();if(!isMini){ctx.lineWidth=1.5;ctx.strokeStyle='#4d4d3b';ctx.stroke();ctx.font='12px Georgia';ctx.fillStyle='#ffedcf';ctx.fillText(o.name,p.x+10,p.y-8)}}
+ const p=worldToCanvas(car.x,car.z,ox,oz,scale,w);ctx.save();ctx.translate(p.x,p.y);ctx.rotate(car.heading);ctx.beginPath();ctx.moveTo(0,-(isMini?12:14));ctx.lineTo(-(isMini?7:9),isMini?8:10);ctx.lineTo(0,4);ctx.lineTo(isMini?7:9,isMini?8:10);ctx.closePath();ctx.fillStyle='#fff9e7';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#684935';ctx.stroke();ctx.restore();ctx.restore()}
+function drawMap(){const ctx=$('map').getContext('2d');if(!ctx)return;ctx.save();ctx.beginPath();ctx.arc(128,128,125,0,TAU);ctx.clip();drawCartography(ctx,256,car.x,car.z,.64,true);ctx.restore()}
+function drawAtlasMap(){const ctx=$('bigMap').getContext('2d');if(!ctx)return;drawCartography(ctx,620,0,0,620/(WORLD_EDGE*2),false)}
+function frame(time){const dt=Math.min((time-last)/1000,.04);last=time;if(started&&!atlasOpen)update(dt,time);renderer.render(scene,camera);requestAnimationFrame(frame)}
+function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.55))}addEventListener('resize',resize);
+const keyMap={KeyW:'gas',ArrowUp:'gas',KeyS:'brake',ArrowDown:'brake',Space:'brake',KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right'};
+addEventListener('keydown',e=>{if(keyMap[e.code]){controls[keyMap[e.code]]=true;e.preventDefault()}if(e.repeat)return;if(e.code==='KeyL')toggleLow();if(e.code==='KeyC')view=(view+1)%3;if(e.code==='KeyR')recover();if(e.code==='KeyE')restart();if(e.code==='KeyM')atlasOpen?closeAtlas():openAtlas('map');if(e.code==='KeyJ')atlasOpen?closeAtlas():openAtlas('journal');if(e.code==='Escape'&&atlasOpen)closeAtlas()});addEventListener('keyup',e=>{if(keyMap[e.code]){controls[keyMap[e.code]]=false;e.preventDefault()}});addEventListener('blur',()=>{Object.keys(controls).forEach(k=>controls[k]=false)});document.addEventListener('visibilitychange',()=>{if(document.hidden){Object.keys(controls).forEach(k=>controls[k]=false);saveProgress()}});
+for(const b of document.querySelectorAll('[data-hold]')){const k=b.dataset.hold;const down=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch{}controls[k]=true;b.classList.add('down')},up=e=>{e.preventDefault();controls[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',down);for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,up)}
+$('atlasButton').onclick=()=>openAtlas('map');$('mini').onclick=()=>openAtlas('map');$('mini').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openAtlas('map')}};$('atlasClose').onclick=closeAtlas;$('atlasResume').onclick=closeAtlas;$('mapTab').onclick=()=>setAtlasTab('map');$('journalTab').onclick=()=>setAtlasTab('journal');$('freshStart').onclick=()=>{if(!confirm('Begin a new journey? This resets saved places, map and distance.'))return;try{localStorage.removeItem(PERSIST);localStorage.removeItem(EXPLORE_KEY);localStorage.removeItem(POSITION_KEY)}catch{};location.reload()};$('camera').onclick=()=>view=(view+1)%3;$('recover').onclick=recover;$('stallRecover').onclick=recover;$('gearToggle').onclick=toggleLow;$('restart').onclick=restart;
+$('sound').onclick=async()=>{try{if(!audio){audio=new (window.AudioContext||window.webkitAudioContext)();osc=audio.createOscillator();gain=audio.createGain();filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=230;osc.type='sawtooth';osc.connect(filter);filter.connect(gain);gain.connect(audio.destination);gain.gain.value=0;osc.start()}await audio.resume();muted=!muted;$('sound').textContent=muted?'SOUND OFF':'SOUND ON'}catch(e){$('sound').textContent='NO AUDIO'}};
+$('begin').onclick=()=>{started=true;$('intro').style.display='none';$('gearToggle').textContent=car.low?'4×4 LOW · ON':'4×4 LOW · OFF';showToast('A whole landscape to discover. Open your atlas with M.')};
+car.y=height(car.x,car.z);safe={x:car.x,z:car.z,heading:car.heading};carRoot.position.set(car.x,car.y,car.z);camera.position.set(car.x+12,car.y+11,car.z+13);camera.lookAt(car.x,car.y,car.z);drawMap();$('begin').disabled=false;$('begin').textContent=car.odometer>0?'CONTINUE YOUR JOURNEY →':'BEGIN EXPLORING →';$('loading').textContent='World ready · Ten hidden places · Three regions';requestAnimationFrame(frame);
+</script>
+</body>
+</html>
